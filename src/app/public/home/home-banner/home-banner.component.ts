@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'al-home-banner',
@@ -6,5 +7,11 @@ import { Component } from '@angular/core';
   styleUrls: ['./home-banner.component.scss']
 })
 export class HomeBannerComponent {
+ appPath: string = 'app/dashboard'
+ 
+ constructor(private router: Router) {}
 
+ public navigateToDashboard() {
+  this.router.navigate([this.appPath]);
+ }
 }
