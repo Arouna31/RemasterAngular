@@ -21,12 +21,12 @@ import { WorkdayRoutingModule } from './workday/workday-routing.module';
   ],
   imports: [
     SharedModule,
-    ProtectedRoutingModule,
-    PlanningRoutingModule,
     DashboardRoutingModule,
-    ParametersRoutingModule,
+    PlanningRoutingModule,
+    WorkdayRoutingModule,
     ProfilRoutingModule,
-    WorkdayRoutingModule
+    ParametersRoutingModule,
+    ProtectedRoutingModule,
   ]
 })
 export class ProtectedModule { }
