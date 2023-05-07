@@ -1,26 +1,47 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { User } from '../../models/user';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
   selector: 'al-sidenav',
   templateUrl: './sidenav.component.html',
-  styleUrls: ['./sidenav.component.scss']
+  styleUrls: ['./sidenav.component.scss'],
 })
-export class SidenavComponent {
- prefix: string = 'app';
- dashboardPath: string = `${this.prefix}/dashboard`;
- planningPath: string = `${this.prefix}/planning`;
- workdayPath: string = `${this.prefix}/workday`;
- profilPath: string = `${this.prefix}/profil`;
- parametersPath: string = `${this.prefix}/parameters`;
+export class SidenavComponent implements OnInit, OnDestroy {
+  prefix: string = 'app';
+  dashboardPath: string = `${this.prefix}/dashboard`;
+  planningPath: string = `${this.prefix}/planning`;
+  workdayPath: string = `${this.prefix}/workday`;
+  profilPath: string = `${this.prefix}/profil`;
+  parametersPath: string = `${this.prefix}/parameters`;
 
- constructor(private router: Router) { }
+  subscription: Subscription;
+  user: User | null;
 
- public navigate(page: string): void {
-  this.router.navigate([page]);
- }
- 
- public isActive(page: string): boolean {
-   return this.router.isActive(page, {paths: 'exact', queryParams: 'exact', fragment: 'ignored', matrixParams: 'ignored'});
- }
+  constructor(private router: Router, private authService: AuthService) {}
+
+  ngOnInit(): void {
+    this.subscription = this.authService.user$.subscribe(
+      (user) => (this.user = user)
+    );
+  }
+
+  public navigate(page: string): void {
+    this.router.navigate([page]);
+  }
+
+  public isActive(page: string): boolean {
+    return this.router.isActive(page, {
+      paths: 'exact',
+      queryParams: 'exact',
+      fragment: 'ignored',
+      matrixParams: 'ignored',
+    });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
 }
