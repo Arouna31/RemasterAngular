@@ -1,65 +1,29 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-
-export interface Workday {
-   dueDate: string;
-   doneTasks: number;
-   remainingTasks: number;
-}
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Router } from '@angular/router';
+import { Workday } from 'src/app/shared/models/workday';
 
 @Component({
   selector: 'al-planning-workday-item',
   templateUrl: './planning-workday-item.component.html',
-  styles: [
-  ]
+  styles: [],
 })
-export class PlanningWorkdayItemComponent implements OnChanges {
-   @Input() dueDate: string;
-   @Input() doneTasks: number | string;
-   @Input() remainingTasks: number | string;
-   @Output() workdayRemoved = new EventEmitter<string>;
+export class PlanningWorkdayItemComponent {
+  @Input() workday: Workday;
+  @Output() workdayRemoved = new EventEmitter<Workday>();
 
-  ngOnChanges(changes: SimpleChanges) {
-  for (const propName in changes) {
-   this.update(propName, changes[propName].currentValue);
+  constructor(private router: Router) {}
+
+  ngOnInit() {}
+
+  removeWorkday(workday: Workday) {
+    this.workdayRemoved.emit(workday); // dueDate devient workday !
   }
- }
-  
- update(propName: string, propValue: string|number) {
-  
-  switch (propName) {
-   case 'dueDate': {
-    if ('Lundi' === propValue) { this.dueDate += ' (Aujourd\'hui)'; }
-    break;
-   }
-   case 'doneTasks': {
-    if (0 === propValue) { this.doneTasks = 'Aucune tâche terminé.'; }
-    break;
-   }
-   case 'remainingTasks': {
-    if (0 === propValue) { 
-     this.remainingTasks = 'Journée de travail terminée !';
-    } 
-    break;
-   }
-   default: {
-    break;
-   }
+
+  goWorkday(workday: Workday) {
+    this.router.navigate(['app/workday'], {
+      queryParams: {
+        date: workday.dueDate,
+      },
+    });
   }
- }
-
-  removeWorkday(dueDate: string) {
-   this.workdayRemoved.emit(dueDate);
-  }
-  // currentWorkday: Workday;
-  // @Input() 
-  // set workday(workday: Workday) {
-  //   this.currentWorkday = workday || {};
-  //   if ('Lundi' === workday.dueDate) {
-  //     this.currentWorkday.dueDate += ' (Aujourd\'hui)';
-  //   }
-  // }
-
-  	
-  // get workday() { return this.currentWorkday; } // workday va reprendre la valeur de currentWorkday
-
 }

@@ -33,7 +33,7 @@ export class AppComponent {
 
     // On connecte l’utilisateur avec les informations de connexions stockées.
     const userId: string = localStorage.getItem('userId')!;
-    this.usersService.get(userId, token).subscribe((user) => {
+    this.usersService.get(userId).subscribe((user) => {
       if (!user) {
         return;
       }

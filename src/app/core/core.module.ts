@@ -1,6 +1,6 @@
 import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 
 import { PublicModule } from '../public/public.module';
 import { ProtectedModule } from '../protected/protected.module';
@@ -11,6 +11,7 @@ import { LoaderComponent } from './components/loader/loader.component';
 import { ToastrComponent } from './components/toastr/toastr.component';
 
 import { AlertModule } from 'ngx-bootstrap/alert';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,13 @@ import { AlertModule } from 'ngx-bootstrap/alert';
     AlertModule.forRoot(),
   ],
   exports: [NavbarComponent, FooterComponent, LoaderComponent, ToastrComponent],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
+  ],
 })
 export class CoreModule {
   //Empêcher CoreModule d'être appelé plusieurs fois

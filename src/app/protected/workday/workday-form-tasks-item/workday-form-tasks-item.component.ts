@@ -16,4 +16,8 @@ export class WorkdayFormTasksItemComponent {
   removeTask(index: number) {
     this.removedTask.emit(index);
   }
+
+  selectTodo(todo: number) {
+    this.task.patchValue({ todo: todo });
+  }
 }

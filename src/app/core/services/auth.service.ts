@@ -8,6 +8,7 @@ import { UsersService } from 'src/app/core/services/users.service';
 import { ErrorService } from './error.service';
 import { LoaderService } from './loader.service';
 import { Router } from '@angular/router';
+import { ToastrService } from './toastr.service';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +24,8 @@ export class AuthService {
     private usersService: UsersService,
     private errorService: ErrorService,
     private loaderService: LoaderService,
-    private router: Router
+    private router: Router,
+    private toastrService: ToastrService
   ) {}
 
   register(
@@ -40,15 +42,9 @@ export class AuthService {
       returnSecureToken: true,
     };
 
-    console.log(data);
-
-    const httpOptions = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }), // Adding header to request
-    };
-
     this.loaderService.setLoading(true);
 
-    return this.http.post<User | null>(url, data, httpOptions).pipe(
+    return this.http.post<User | null>(url, data).pipe(
       switchMap((data: any) => {
         const jwt: string = data.idToken;
         const user = new User({
@@ -75,25 +71,41 @@ export class AuthService {
       password: password,
       returnSecureToken: true,
     };
-    const httpOptions = {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-    };
 
     this.loaderService.setLoading(true);
 
-    return this.http.post<User>(url, data, httpOptions).pipe(
+    return this.http.post<User>(url, data).pipe(
       switchMap((data: any) => {
         const userId: string = data.localId;
         const jwt: string = data.idToken;
         // On sauvegarde les informations de connexion de l’utilisateur.
         this.saveAuthData(userId, jwt);
-        return this.usersService.get(userId, jwt);
+        return this.usersService.get(userId);
       }),
       tap((user) => this.user.next(user)),
       tap((_) => this.logoutTimer(3600)), //déclenchement de la muniterie
       catchError((error) => this.errorService.handleError(error)),
       finalize(() => this.loaderService.setLoading(false))
     );
+  }
+
+  updateUserState(user: User): Observable<User | null> {
+    this.loaderService.setLoading(true);
+    return this.usersService.update(user).pipe(
+      tap((user) => this.user.next(user)),
+      tap((_) =>
+        this.toastrService.showToastr({
+          category: 'success',
+          message: 'Vos informations ont été mises à jour !',
+        })
+      ),
+      catchError((error) => this.errorService.handleError(error)),
+      finalize(() => this.loaderService.setLoading(false))
+    );
+  }
+
+  get currentUser(): User | null {
+    return this.user.getValue();
   }
 
   // Déconnexion automatique à l'expiration du token

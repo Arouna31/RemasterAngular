@@ -3,8 +3,14 @@
     <div class="form-inline">
       <div class="form-group">
         <label class="mr-3">Date:</label>
-        <input bsDatepicker [formControl]="dueDate" [bsConfig]="{ dateInputFormat: 'DD/MM/YYYY' }" type="text"
-          class="form-control form-control-sm align-middle" />
+        <input
+          bsDatepicker
+          (bsValueChange)="selectDate($event)"
+          [formControl]="dueDate"
+          [bsConfig]="{ dateInputFormat: 'DD/MM/YYYY' }"
+          type="text"
+          class="form-control form-control-sm align-middle"
+        />
       </div>
     </div>
   </div>
